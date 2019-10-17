@@ -1,0 +1,39 @@
+<div class="content">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 offset-md-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="text-center">
+              <img src="assets/img/logo.png" width="80%">
+            </div>
+            <br>
+            <form role="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+              <div class="form-content">
+                <div class="form-group">
+                  <input type="text" formControlName="username" class="form-control" placeholder="Usuário">
+                </div>
+
+                <div class="form-group">
+                  <input type="password" formControlName="password" class="form-control" placeholder="Senha">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col col-md-4">
+                  <a href="" style="color: #f54b64;">Cadastrar</a>
+                </div>
+                <div class="col col-md-8 text-right">
+                  <a href="">Esqueceu sua senha?</a>
+                </div>
+              </div>
+              <div class="text-center">
+                <br>
+                <button class="btn btn-orange" type="submit" [disabled]="!form.valid">Entrar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

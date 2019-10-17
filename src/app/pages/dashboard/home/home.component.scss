@@ -1,0 +1,97 @@
+::ng-deep {
+  body {
+    background-color: #242a37;
+    color: #fff;
+  }
+}
+
+.content {
+  width: 100%;
+  height: auto;
+}
+
+.card {
+  background-color: #242a37;
+  -webkit-box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+}
+
+.profile-image {
+  position: relative;
+  width: 100%;
+  border-radius: 50%;
+  border: 5px solid #f78361;
+  overflow: hidden;
+
+  .img-profile {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .overlay {
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: 0.5s ease;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.profile-cover {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  .img-cover {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .overlay {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: 0.5s ease;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.profile-image:hover .overlay,
+.profile-cover:hover .overlay {
+  opacity: 1;
+}
+
+.list-group {
+  margin: 0 -20px;
+  .list-group-item {
+    background-color: #242a37;
+    color: #ffffff;
+  }
+
+  .list-group-item:hover {
+    background-color: #1f2531;
+    color: #f54b64;
+  }
+}

@@ -1,0 +1,106 @@
+<div class="content">
+  <div class="container">
+    <div class="row pt-5">
+      <div class="col col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col col-md-6 offset-md-3">
+                <div class="profile-image">
+                  <img [src]="getProfilePic()" onError="this.src = 'assets/img/user.jpg'" class="img-profile">
+                  <div class="overlay" (click)="changeProfile()">
+                    <i class="fas fa-2x fa-camera"></i>
+                    <input type="file" #profilePicture accept="image/jpeg, image/png"
+                      (change)="processProfile(profilePicture)" style="display: none;">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <h4>{{user?.name || 'Usuário'}}</h4>
+              <form action="">
+                <div class="form-group">
+                  <select class="form-control" (change)="selectChannel($event)">
+                    <option [value]="item.id" *ngFor="let item of user?.channels">{{item.name}}</option>
+                  </select>
+                </div>
+              </form>
+              <p>{{channel?.email || 'admin@broowl.com'}}</p>
+              <p style="margin-top: -15px">{{channel?.phone_number || '(11) 9999-9999'}}</p>
+            </div>
+            <br>
+            <ul class="list-group">
+              <li class="list-group-item">Postagens</li>
+              <li class="list-group-item">Enquetes</li>
+              <li class="list-group-item">Páginas</li>
+              <li class="list-group-item" (click)="openModalEdit()">Configurações</li>
+              <li class="list-group-item" (click)="logout()">Sair</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col col-md-8">
+        <div class="profile-cover">
+          <img [src]="getCoverPic()" onError="this.src = 'assets/img/cover.jpg'" class="img-cover">
+          <div class="overlay" (click)="changeCover()">
+            <i class="fas fa-2x fa-image"></i>
+            <input type="file" #profileCover accept="image/jpeg, image/png" (change)="processCover(profileCover)"
+              style="display: none;">
+          </div>
+        </div>
+        <ngb-tabset>
+          <ngb-tab title="Nova publicação">
+            <ng-template ngbTabContent>
+              <form role="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                  <textarea formControlName="content" rows="5" style="width: 100%; padding: 10px;"
+                    placeholder="Escreva aqui..."></textarea>
+                </div>
+                <div>
+                  <button type="submit" class="btn btn-orange" [disabled]="!form.valid">Publicar</button>
+                </div>
+              </form>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab>
+            <ng-template ngbTabTitle>Nova imagem</ng-template>
+            <ng-template ngbTabContent>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee
+              squid.
+              <p>Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko
+                farm-to-table
+                craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco
+                ad vinyl
+                cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS
+                salvia
+                yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit,
+                sustainable jean
+                shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr
+                butcher vero
+                sint qui sapiente accusamus tattooed echo park.</p>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab title="Novo vídeo" [disabled]="true">
+            <ng-template ngbTabContent>
+              <p>Sed commodo, leo at suscipit dictum, quam est porttitor sapien, eget sodales nibh elit id diam. Nulla
+                facilisi. Donec egestas ligula vitae odio interdum aliquet. Duis lectus turpis, luctus eget tincidunt
+                eu, congue et odio. Duis pharetra et nisl at faucibus. Quisque luctus pulvinar arcu, et molestie lectus
+                ultrices et. Sed diam urna, egestas ut ipsum vel, volutpat volutpat neque. Praesent fringilla tortor
+                arcu. Vivamus faucibus nisl enim, nec tristique ipsum euismod facilisis. Morbi ut bibendum est, eu
+                tincidunt odio. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+                Mauris aliquet odio ac lorem aliquet ultricies in eget neque. Phasellus nec tortor vel tellus pulvinar
+                feugiat.</p>
+            </ng-template>
+          </ngb-tab>
+        </ngb-tabset>
+
+        <br><br>
+        <div style="margin-bottom: 20px;" class="card" *ngFor="let item of posts">
+          <div class="card-body">
+            <h4>{{user.name}}</h4>
+            <p>{{item.content}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
