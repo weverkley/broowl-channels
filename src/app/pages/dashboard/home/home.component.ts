@@ -8,6 +8,7 @@ import { ChannelService } from 'src/app/services/channel.service';
 
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
+import { EditPostComponent } from 'src/app/components/edit-post/edit-post.component';
 
 @Component({
   selector: 'app-home',
@@ -17,8 +18,12 @@ import { AuthService } from 'src/app/services/auth.service';
 export class HomeComponent implements OnInit {
   @ViewChild('profilePicture', { static: true }) profilePicture: ElementRef;
   @ViewChild('profileCover', { static: true }) profileCover: ElementRef;
+  @ViewChild('postImage', { static: true }) postImage: ElementRef;
+  @ViewChild('postVideo', { static: true }) postVideo: ElementRef;
 
   form: FormGroup;
+  form1: FormGroup;
+  form2: FormGroup;
   user: any;
   channel: any;
   posts: any[];
@@ -39,6 +44,14 @@ export class HomeComponent implements OnInit {
     this.form = this.fb.group({
       channel_id: [this.channel.id, Validators.required],
       content: ['', Validators.required]
+    });
+    this.form1 = this.fb.group({
+      channel_id: [this.channel.id, Validators.required],
+      image: ['', Validators.required]
+    });
+    this.form2 = this.fb.group({
+      channel_id: [this.channel.id, Validators.required],
+      image: ['', Validators.required]
     });
   }
 
@@ -72,7 +85,7 @@ export class HomeComponent implements OnInit {
   }
 
   getCoverPic() {
-    return 'https://storage.googleapis.com/broowl-dev/' + this.user.id + '/images/channel/' + this.channel.id + '/cover.png';
+    return 'https://storage.googleapis.com/broowl-dev/' + this.user.id + '/images/channel/' + this.channel.id + '/cover.jpeg';
   }
 
   getUser() {
@@ -110,30 +123,23 @@ export class HomeComponent implements OnInit {
   }
 
   onSubmit() {
-    Swal.fire({
-      text: 'Postagem criada com sucesso.',
-      type: 'success',
-      confirmButtonText: 'Ok',
-      customClass: {
-        popup: 'custom-alert'
-      }
-    })
-    // if (this.form.valid) {
-    //   const data = this.form.value;
-    //   this.postService.add(data).then(result => {
-    //     if (result.success) {
-    //       console.log(result);
-    //       Swal.fire({
-    //         text: 'Postagem criada com sucesso.',
-    //         type: 'success',
-    //         confirmButtonText: 'Ok',
-    //         customClass: {
-    //           popup: 'animated tada'
-    //         }
-    //       })
-    //     }
-    //   });
-    // }
+    if (this.form.valid) {
+      const data = this.form.value;
+      this.postService.add(data).then(result => {
+        if (result.success) {
+          Swal.fire({
+            text: 'Postagem criada com sucesso.',
+            type: 'success',
+            confirmButtonText: 'Ok',
+            customClass: {
+              popup: 'animated tada'
+            }
+          });
+          this.posts.push(result.data);
+          this.form.reset();
+        }
+      });
+    }
   }
 
   changeProfile() {
@@ -165,7 +171,14 @@ export class HomeComponent implements OnInit {
           mimetype: this.base64MimeType(base64)
         };
         this.userService.uploadProfile(data).then(result => {
-          console.log(result);
+          Swal.fire({
+            text: 'Imagem alterada com sucesso.',
+            type: 'success',
+            confirmButtonText: 'Ok',
+            customClass: {
+              popup: 'custom-alert'
+            }
+          });
         });
       });
     }
@@ -200,8 +213,109 @@ export class HomeComponent implements OnInit {
           mimetype: this.base64MimeType(base64)
         };
         this.channelService.uploadCover(data).then(result => {
-          console.log(result);
+          Swal.fire({
+            text: 'Imagem alterada com sucesso.',
+            type: 'success',
+            confirmButtonText: 'Ok',
+            customClass: {
+              popup: 'custom-alert'
+            }
+          });
         });
+      });
+    }
+  }
+
+  deletePost(item) {
+    Swal.fire({
+      text: "Tem certeza que deseja deletar esta postagem, suas alterações serão irreversiveis?",
+      type: 'warning',
+      customClass: {
+        popup: 'custom-alert'
+      },
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: 'Não',
+      confirmButtonText: 'Sim'
+    }).then((result) => {
+      if (result.value) {
+        this.postService.delete(item.id).then(result => {
+          const index = this.posts.indexOf(item);
+          this.posts.splice(index, 1);
+          Swal.fire({
+            text: 'Sua postagem foi deletada com sucesso.',
+            type: 'success',
+            confirmButtonText: 'Ok',
+            customClass: {
+              popup: 'custom-alert'
+            }
+          });
+        });
+      }
+    })
+  }
+
+  editPost(item) {
+    const modalRef = this.modalService.open(EditPostComponent, { windowClass: 'modal-dark' });
+    modalRef.componentInstance.post = item;
+    modalRef.result.then((result) => {
+      if (typeof result != undefined) {
+        this.getPosts();
+      }
+    });
+  }
+
+  onImageSelected(imageInput) {
+    if (imageInput.files[0]) {
+      const file: File = imageInput.files[0];
+      var pattern = /image-*/;
+
+      if (!file.type.match(pattern)) {
+        Swal.fire({
+          text: 'Imagem com formato inválido.',
+          type: 'error',
+          confirmButtonText: 'Ok',
+          customClass: {
+            popup: 'custom-alert'
+          }
+        })
+        return;
+      }
+
+      this.getBase64(file).then(base64 => {
+        const data = {
+          channel_id: this.channel.id,
+          image: base64,
+          mimetype: this.base64MimeType(base64)
+        };
+      });
+    }
+  }
+
+  onVideoSelected(videoInput) {
+    if (videoInput.files[0]) {
+      const file: File = videoInput.files[0];
+      var pattern = /video-*/;
+
+      if (!file.type.match(pattern)) {
+        Swal.fire({
+          text: 'Video com formato inválido.',
+          type: 'error',
+          confirmButtonText: 'Ok',
+          customClass: {
+            popup: 'custom-alert'
+          }
+        })
+        return;
+      }
+
+      this.getBase64(file).then(base64 => {
+        const data = {
+          channel_id: this.channel.id,
+          video: base64,
+          mimetype: this.base64MimeType(base64)
+        };
       });
     }
   }

@@ -95,3 +95,24 @@
     color: #f54b64;
   }
 }
+
+.btn-toggle.dropdown-toggle::after {
+  display: none;
+}
+
+.dropdown-menu {
+  color: #fff;
+  background-color: #242a37;
+  -webkit-box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-item{
+  color: #fff;
+}
+
+.dropdown-item:focus, .dropdown-item:hover {
+  color: #f54b64;
+  background-color: #181c25;
+}

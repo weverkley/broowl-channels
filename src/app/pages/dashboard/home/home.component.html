@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-body">
             <div class="row">
-              <div class="col col-md-6 offset-md-3">
+              <div class="col col-sm-6 offset-sm-3">
                 <div class="profile-image">
                   <img [src]="getProfilePic()" onError="this.src = 'assets/img/user.jpg'" class="img-profile">
                   <div class="overlay" (click)="changeProfile()">
@@ -64,31 +64,31 @@
           </ngb-tab>
           <ngb-tab>
             <ng-template ngbTabTitle>Nova imagem</ng-template>
-            <ng-template ngbTabContent>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee
-              squid.
-              <p>Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko
-                farm-to-table
-                craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco
-                ad vinyl
-                cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS
-                salvia
-                yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit,
-                sustainable jean
-                shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr
-                butcher vero
-                sint qui sapiente accusamus tattooed echo park.</p>
+            <ng-template ngbTabContent>
+              <form role="form" [formGroup]="form1" (ngSubmit)="onSubmit()">
+                <br>
+                <div class="form-group">
+                  <input type="file" #postImage accept="image/jpeg, image/png" (change)="onImageSelected(postImage)"
+                    formControlName="image" class="form-control">
+                </div>
+                <div>
+                  <button type="submit" class="btn btn-orange" [disabled]="!form1.valid">Publicar</button>
+                </div>
+              </form>
             </ng-template>
           </ngb-tab>
-          <ngb-tab title="Novo vídeo" [disabled]="true">
+          <ngb-tab title="Novo vídeo">
             <ng-template ngbTabContent>
-              <p>Sed commodo, leo at suscipit dictum, quam est porttitor sapien, eget sodales nibh elit id diam. Nulla
-                facilisi. Donec egestas ligula vitae odio interdum aliquet. Duis lectus turpis, luctus eget tincidunt
-                eu, congue et odio. Duis pharetra et nisl at faucibus. Quisque luctus pulvinar arcu, et molestie lectus
-                ultrices et. Sed diam urna, egestas ut ipsum vel, volutpat volutpat neque. Praesent fringilla tortor
-                arcu. Vivamus faucibus nisl enim, nec tristique ipsum euismod facilisis. Morbi ut bibendum est, eu
-                tincidunt odio. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-                Mauris aliquet odio ac lorem aliquet ultricies in eget neque. Phasellus nec tortor vel tellus pulvinar
-                feugiat.</p>
+              <form role="form" [formGroup]="form2" (ngSubmit)="onSubmit()">
+                <br>
+                <div class="form-group">
+                  <input type="file" #posVideo accept="video/mp4,video/x-m4v,video/*" (change)="onVideoSelected(posVideo)"
+                    formControlName="image" class="form-control">
+                </div>
+                <div>
+                  <button type="submit" class="btn btn-orange" [disabled]="!form2.valid">Publicar</button>
+                </div>
+              </form>
             </ng-template>
           </ngb-tab>
         </ngb-tabset>
@@ -96,7 +96,19 @@
         <br><br>
         <div style="margin-bottom: 20px;" class="card" *ngFor="let item of posts">
           <div class="card-body">
-            <h4>{{user.name}}</h4>
+            <div style="display: flex; justify-content: space-between;">
+              <h4>{{user.name}}</h4>
+              <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                <button style="border-color: #242a37!important;" class="btn-toggle btn btn-outline-red"
+                  id="dropdownBasic1" ngbDropdownToggle>
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                  <button ngbDropdownItem *ngIf="item.type == 'TEXT'" (click)="editPost(item)">Edit</button>
+                  <button ngbDropdownItem (click)="deletePost(item)">Delete</button>
+                </div>
+              </div>
+            </div>
             <p>{{item.content}}</p>
           </div>
         </div>

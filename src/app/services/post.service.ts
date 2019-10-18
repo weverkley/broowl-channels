@@ -14,6 +14,10 @@ export class PostService {
     return this.http.post<any>(`${environment.apiUrl}post`, data).toPromise();
   }
 
+  delete(id): Promise<any> {
+    return this.http.delete<any>(`${environment.apiUrl}post/${id}`).toPromise();
+  }
+
   getById(id: number): Promise<any> {
     return this.http.get<any>(`${environment.apiUrl}post/${id}`).toPromise();
   }
