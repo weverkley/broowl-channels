@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { EditProfileComponent } from 'src/app/components/edit-profile/edit-profile.component';
 import { UserService } from 'src/app/services/user.service';
 import { PostService } from 'src/app/services/post.service';
@@ -18,15 +18,15 @@ import { EditPostComponent } from 'src/app/components/edit-post/edit-post.compon
 export class HomeComponent implements OnInit {
   @ViewChild('profilePicture', { static: true }) profilePicture: ElementRef;
   @ViewChild('profileCover', { static: true }) profileCover: ElementRef;
-  @ViewChild('postImage', { static: true }) postImage: ElementRef;
-  @ViewChild('postVideo', { static: true }) postVideo: ElementRef;
 
   form: FormGroup;
   form1: FormGroup;
   form2: FormGroup;
+  form3: FormGroup;
   user: any;
   channel: any;
   posts: any[];
+  pollOptions: FormArray;
 
   constructor(
     private modalService: NgbModal,
@@ -42,17 +42,53 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.channel = JSON.parse(localStorage.getItem('selected-channel'));
     this.form = this.fb.group({
+      user_id: [this.user.id, Validators.required],
       channel_id: [this.channel.id, Validators.required],
-      content: ['', Validators.required]
+      content: ['', Validators.required],
+      type: ['TEXT']
     });
     this.form1 = this.fb.group({
+      user_id: [this.user.id, Validators.required],
       channel_id: [this.channel.id, Validators.required],
-      image: ['', Validators.required]
+      content: [''],
+      image: ['', Validators.required],
+      mimetype: ['', Validators.required],
+      type: ['IMAGE']
     });
     this.form2 = this.fb.group({
+      user_id: [this.user.id, Validators.required],
       channel_id: [this.channel.id, Validators.required],
-      image: ['', Validators.required]
+      content: [''],
+      image: ['', Validators.required],
+      mimetype: ['', Validators.required],
+      type: ['VIDEO']
     });
+    this.form3 = this.fb.group({
+      user_id: [this.user.id, Validators.required],
+      channel_id: [this.channel.id, Validators.required],
+      content: [''],
+      options: this.fb.array([]),
+      type: ['POLL']
+    });
+  }
+
+  get optionsArray() {
+    return this.form3.get('options') as FormArray;
+  }
+
+  createPollOption(): FormGroup {
+    return this.fb.group({
+      title: ''
+    });
+  }
+
+  addPollOption(): void {
+    this.pollOptions = this.form3.get('options') as FormArray;
+    this.pollOptions.push(this.createPollOption());
+  }
+
+  removePollOption(index: number) {
+    this.pollOptions.removeAt(index);
   }
 
   logout() {
@@ -81,11 +117,11 @@ export class HomeComponent implements OnInit {
   }
 
   getProfilePic() {
-    return 'https://storage.googleapis.com/broowl-dev/' + this.user.id + '/images/profile.png';
+    return 'https://storage.googleapis.com/broowl-dev/' + this.user.id + '/images/profile.png?time=' + new Date();
   }
 
   getCoverPic() {
-    return 'https://storage.googleapis.com/broowl-dev/' + this.user.id + '/images/channel/' + this.channel.id + '/cover.jpeg';
+    return 'https://storage.googleapis.com/broowl-dev/' + this.user.id + '/images/channel/' + this.channel.id + '/cover.jpeg?time=' + new Date();
   }
 
   getUser() {
@@ -122,23 +158,79 @@ export class HomeComponent implements OnInit {
     this.channel = data;
   }
 
-  onSubmit() {
-    if (this.form.valid) {
-      const data = this.form.value;
-      this.postService.add(data).then(result => {
-        if (result.success) {
-          Swal.fire({
-            text: 'Postagem criada com sucesso.',
-            type: 'success',
-            confirmButtonText: 'Ok',
-            customClass: {
-              popup: 'animated tada'
-            }
-          });
-          this.posts.push(result.data);
-          this.form.reset();
-        }
-      });
+  onSubmit(form) {
+    if (form == 'form') {
+      if (this.form.valid) {
+        const data = this.form.value;
+        this.postService.add(data).then(result => {
+          if (result.success) {
+            Swal.fire({
+              text: 'Postagem criada com sucesso.',
+              type: 'success',
+              confirmButtonText: 'Ok',
+              customClass: {
+                popup: 'custom-alert'
+              }
+            });
+            this.posts.push(result.data);
+            this.form.reset();
+          }
+        });
+      }
+    } else if (form == 'form1') {
+      if (this.form1.valid) {
+        const data = this.form1.value;
+        this.postService.add(data).then(result => {
+          if (result.success) {
+            Swal.fire({
+              text: 'Postagem criada com sucesso.',
+              type: 'success',
+              confirmButtonText: 'Ok',
+              customClass: {
+                popup: 'custom-alert'
+              }
+            });
+            this.posts.push(result.data);
+            this.form1.reset();
+          }
+        });
+      }
+    } else if (form == 'form2') {
+      if (this.form2.valid) {
+        const data = this.form2.value;
+        this.postService.add(data).then(result => {
+          if (result.success) {
+            Swal.fire({
+              text: 'Postagem criada com sucesso.',
+              type: 'success',
+              confirmButtonText: 'Ok',
+              customClass: {
+                popup: 'custom-alert'
+              }
+            });
+            this.posts.push(result.data);
+            this.form2.reset();
+          }
+        });
+      }
+    } else if (form == 'form3') {
+      if (this.form3.valid) {
+        const data = this.form3.value;
+        this.postService.add(data).then(result => {
+          if (result.success) {
+            Swal.fire({
+              text: 'Enquete criada com sucesso.',
+              type: 'success',
+              confirmButtonText: 'Ok',
+              customClass: {
+                popup: 'custom-alert'
+              }
+            });
+            this.posts.push(result.data);
+            this.form3.reset();
+          }
+        });
+      }
     }
   }
 
@@ -266,9 +358,9 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  onImageSelected(imageInput) {
-    if (imageInput.files[0]) {
-      const file: File = imageInput.files[0];
+  onImageSelected(e) {
+    if (e.target.files[0]) {
+      const file: File = e.target.files[0];
       var pattern = /image-*/;
 
       if (!file.type.match(pattern)) {
@@ -284,18 +376,15 @@ export class HomeComponent implements OnInit {
       }
 
       this.getBase64(file).then(base64 => {
-        const data = {
-          channel_id: this.channel.id,
-          image: base64,
-          mimetype: this.base64MimeType(base64)
-        };
+        this.form1.get('image').setValue(base64);
+        this.form1.get('mimetype').setValue(this.base64MimeType(base64));
       });
     }
   }
 
-  onVideoSelected(videoInput) {
-    if (videoInput.files[0]) {
-      const file: File = videoInput.files[0];
+  onVideoSelected(e) {
+    if (e.target.files[0]) {
+      const file: File = e.target.files[0];
       var pattern = /video-*/;
 
       if (!file.type.match(pattern)) {
@@ -311,11 +400,8 @@ export class HomeComponent implements OnInit {
       }
 
       this.getBase64(file).then(base64 => {
-        const data = {
-          channel_id: this.channel.id,
-          video: base64,
-          mimetype: this.base64MimeType(base64)
-        };
+        this.form2.get('image').setValue(base64);
+        this.form2.get('mimetype').setValue(this.base64MimeType(base64));
       });
     }
   }

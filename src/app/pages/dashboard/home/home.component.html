@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row pt-5">
       <div class="col col-md-4">
-        <div class="card">
+        <div class="card card-dark">
           <div class="card-body">
             <div class="row">
               <div class="col col-sm-6 offset-sm-3">
@@ -31,7 +31,6 @@
             <br>
             <ul class="list-group">
               <li class="list-group-item">Postagens</li>
-              <li class="list-group-item">Enquetes</li>
               <li class="list-group-item">Páginas</li>
               <li class="list-group-item" (click)="openModalEdit()">Configurações</li>
               <li class="list-group-item" (click)="logout()">Sair</li>
@@ -51,12 +50,13 @@
         <ngb-tabset>
           <ngb-tab title="Nova publicação">
             <ng-template ngbTabContent>
-              <form role="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+              <form role="form" [formGroup]="form" (ngSubmit)="onSubmit('form')">
+                <br>
                 <div class="form-group">
                   <textarea formControlName="content" rows="5" style="width: 100%; padding: 10px;"
                     placeholder="Escreva aqui..."></textarea>
                 </div>
-                <div>
+                <div style="text-align: right;">
                   <button type="submit" class="btn btn-orange" [disabled]="!form.valid">Publicar</button>
                 </div>
               </form>
@@ -65,13 +65,17 @@
           <ngb-tab>
             <ng-template ngbTabTitle>Nova imagem</ng-template>
             <ng-template ngbTabContent>
-              <form role="form" [formGroup]="form1" (ngSubmit)="onSubmit()">
+              <form role="form" [formGroup]="form1" (ngSubmit)="onSubmit('form1')">
                 <br>
                 <div class="form-group">
-                  <input type="file" #postImage accept="image/jpeg, image/png" (change)="onImageSelected(postImage)"
-                    formControlName="image" class="form-control">
+                  <textarea formControlName="content" rows="5" style="width: 100%; padding: 10px;"
+                    placeholder="Escreva aqui..."></textarea>
                 </div>
-                <div>
+                <div class="form-group">
+                  <input type="file" accept="image/jpeg, image/png" (change)="onImageSelected($event)"
+                    class="form-control">
+                </div>
+                <div style="text-align: right;">
                   <button type="submit" class="btn btn-orange" [disabled]="!form1.valid">Publicar</button>
                 </div>
               </form>
@@ -79,14 +83,43 @@
           </ngb-tab>
           <ngb-tab title="Novo vídeo">
             <ng-template ngbTabContent>
-              <form role="form" [formGroup]="form2" (ngSubmit)="onSubmit()">
+              <form role="form" [formGroup]="form2" (ngSubmit)="onSubmit('form2')">
                 <br>
                 <div class="form-group">
-                  <input type="file" #posVideo accept="video/mp4,video/x-m4v,video/*" (change)="onVideoSelected(posVideo)"
-                    formControlName="image" class="form-control">
+                  <textarea formControlName="content" rows="5" style="width: 100%; padding: 10px;"
+                    placeholder="Escreva aqui..."></textarea>
                 </div>
-                <div>
+                <div class="form-group">
+                  <input type="file" accept="video/mp4,video/x-m4v,video/*" (change)="onVideoSelected($event)"
+                    class="form-control">
+                </div>
+                <div style="text-align: right;">
                   <button type="submit" class="btn btn-orange" [disabled]="!form2.valid">Publicar</button>
+                </div>
+              </form>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab title="Nova enquete">
+            <ng-template ngbTabContent>
+              <form role="form" [formGroup]="form3" (ngSubmit)="onSubmit('form3')">
+                <br>
+                <div class="form-group">
+                  <textarea formControlName="content" rows="5" style="width: 100%; padding: 10px;"
+                    placeholder="Escreva aqui..."></textarea>
+                </div>
+                <div formArrayName="options" *ngFor="let item of optionsArray.controls; let i = index;">
+                  <div class="form-group" [formGroupName]="i"
+                    style="display: flex; justify-content: space-between; justify-content: center; align-items: center;">
+                    <input formControlName="title" class="form-control" style="width: 90%;" placeholder="Opção">
+                    <span style="width: 10%; text-align: center;">
+                      <i class="fas fa-2x fa-ban" (click)="removePollOption(i)"></i>
+                    </span>
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span class="button-add-option" style="cursor: pointer;" (click)="addPollOption()"><i
+                      class="fas fa-plus"></i> Add Opção</span>
+                  <button type="submit" class="btn btn-orange" [disabled]="!form3.valid">Publicar</button>
                 </div>
               </form>
             </ng-template>
@@ -97,7 +130,10 @@
         <div style="margin-bottom: 20px;" class="card" *ngFor="let item of posts">
           <div class="card-body">
             <div style="display: flex; justify-content: space-between;">
-              <h4>{{user.name}}</h4>
+              <div>
+                <h4>{{user.name}}</h4>
+                <small>{{item.created_at | date: 'dd-MM-yyyy H:m:s'}}</small>
+              </div>
               <div ngbDropdown placement="bottom-right" class="d-inline-block">
                 <button style="border-color: #242a37!important;" class="btn-toggle btn btn-outline-red"
                   id="dropdownBasic1" ngbDropdownToggle>
@@ -109,7 +145,16 @@
                 </div>
               </div>
             </div>
-            <p>{{item.content}}</p>
+            <p *ngIf="item.type != 'POLL'">{{item.content}}</p>
+            <div *ngIf="item.type == 'IMAGE'" style="margin-top: 10px; text-align: center;">
+              <img [src]="item.url" class="img-fluid">
+            </div>
+            <div *ngIf="item.type == 'POLL'">
+              <p style="margin-bottom: 10px;">{{item.content}}</p>
+              <p *ngFor="let option of item.options">
+                <input type="checkbox"> {{option.title}}
+              </p>
+            </div>
           </div>
         </div>
       </div>

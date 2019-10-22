@@ -1,0 +1,9 @@
+runtime: nodejs10
+service: channels
+
+handlers:
+- url: /
+  static_files: dist/adm/index.html
+  upload: dist/adm/index.html
+- url: /
+  static_dir: dist/adm
